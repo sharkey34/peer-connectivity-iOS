@@ -9,28 +9,62 @@
 import UIKit
 import MultipeerConnectivity
 
-class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessionDelegate {
+class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessionDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     
-    var session: MCSessionState!
     
+    @IBOutlet weak var navItem: UINavigationItem!
+    @IBOutlet weak var drawTicker: UIPickerView!
+    
+    var session: MCSession!
+    var peerId: MCPeerID!
+    var advertisor: MCAdvertiserAssistant!
+    var browser: MCBrowserViewController!
+    var counter = 0
+    
+    let serviceId = "SharkeyEric_5.2"
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        peerId = MCPeerID(displayName: UIDevice.current.name)
+        
+        session = MCSession(peer: peerId)
+        session.delegate = self
+        
+        drawTicker.delegate = self
+        drawTicker.dataSource = self
+//        advertisor = MCAdvertiserAssistant(serviceType: serviceId, discoveryInfo: nil, session: session)
+//        advertisor.start()
+        
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    
+    @IBAction func connectTap(_ sender: UIBarButtonItem) {
     }
-
+    
+    //MARK - UIPicker callbacks
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 10
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        counter += 1
+        return "asdlfkjasdfkjaskdlf"
+    }
+    
+    
+    
     //MARK - MCBrowserViewControllerDelegate
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
-        <#code#>
+        
     }
     
     func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
-        <#code#>
+        
     }
     
     
