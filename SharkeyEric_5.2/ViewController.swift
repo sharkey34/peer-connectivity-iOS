@@ -9,19 +9,36 @@
 import UIKit
 import MultipeerConnectivity
 
-class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessionDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessionDelegate {
     
+    // Creating outlet collections
+    @IBOutlet var rpsImageViews: [UIImageView]!
+    @IBOutlet var userChoiceImages: [UIImageView]!
+    @IBOutlet var profileImages: [UIImageView]!
+    @IBOutlet var wdlLables: [UILabel]!
+    @IBOutlet var tallyCollection: [UILabel]!
     
+    // Creating outlets
+    @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var topView: UIView!
+    @IBOutlet weak var resultLabel: UILabel!
+    @IBOutlet weak var roShamBoLabel: UILabel!
+    @IBOutlet weak var user2Label: UILabel!
+    @IBOutlet weak var user1Label: UILabel!
+    @IBOutlet weak var vsLabel: UILabel!
     @IBOutlet weak var navItem: UINavigationItem!
-    @IBOutlet weak var drawTicker: UIPickerView!
     
+    // Creating variables.
     var session: MCSession!
     var peerId: MCPeerID!
     var advertisor: MCAdvertiserAssistant!
     var browser: MCBrowserViewController!
     var counter = 0
+    var win = 0
+    var draw = 0
+    var loss = 0
     
-    let serviceId = "SharkeyEric_5.2"
+    let serviceId = "sharkeyEric-52"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,40 +48,31 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         session = MCSession(peer: peerId)
         session.delegate = self
         
-        drawTicker.delegate = self
-        drawTicker.dataSource = self
-//        advertisor = MCAdvertiserAssistant(serviceType: serviceId, discoveryInfo: nil, session: session)
-//        advertisor.start()
+        advertisor = MCAdvertiserAssistant(serviceType: serviceId, discoveryInfo: nil, session: session)
+        advertisor.start()
+        
+        setup()
         
     }
     
     
     @IBAction func connectTap(_ sender: UIBarButtonItem) {
-    }
-    
-    //MARK - UIPicker callbacks
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return 10
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        counter += 1
-        return "asdlfkjasdfkjaskdlf"
+        
+        browser = MCBrowserViewController(serviceType: serviceId, session: session)
+        browser.delegate = self
+        
+        self.present(browser, animated: true, completion: nil)
     }
     
     
     
     //MARK - MCBrowserViewControllerDelegate
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
-        
+        browserViewController.dismiss(animated: true, completion: nil)
     }
     
     func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
-        
+        browserViewController.dismiss(animated: true, completion: nil)
     }
     
     
@@ -99,6 +107,42 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     // to a permanent location within its sandbox.
     public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?){
         
+    }
+    
+    func setup(){
+        
+        rpsImageViews[0].image = #imageLiteral(resourceName: "rock")
+        rpsImageViews[1].image = #imageLiteral(resourceName: "paper")
+        rpsImageViews[2].image = #imageLiteral(resourceName: "scissors")
+        
+        for imageView in rpsImageViews{
+            let tap = UITapGestureRecognizer(target: self, action: #selector(ViewController.rpsTapped(sender:)))
+            imageView.addGestureRecognizer(tap)
+            imageView.isUserInteractionEnabled = true
+            imageView.isHidden = true
+        }
+        
+        for label in wdlLables{
+            label.text = ""
+        }
+        
+        resultLabel.text = ""
+        user1Label.text = ""
+        user2Label.text = ""
+        vsLabel.text = ""
+        
+        for label in tallyCollection{
+            label.text = ""
+        }
+        
+        navItem.title = "Not Connected"
+        
+        topView.backgroundColor = UIColor.white
+        playButton.setTitle("", for: .normal)
+    }
+    
+   @objc func rpsTapped(sender: UITapGestureRecognizer){
+        print("tapped")
     }
 }
 
