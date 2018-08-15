@@ -37,6 +37,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var win = 0
     var draw = 0
     var loss = 0
+    var selectedImage: UIImage!
     
     let serviceId = "sharkeyEric-52"
 
@@ -57,7 +58,6 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     
     @IBAction func connectTap(_ sender: UIBarButtonItem) {
-        
         browser = MCBrowserViewController(serviceType: serviceId, session: session)
         browser.delegate = self
         
@@ -80,6 +80,22 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     // Remote peer changed state.
     public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
+        switch state {
+            // Maybe add activity indicator.
+        case .connected:
+            navItem.title = "Connected"
+            user1Label.text = UIDevice.current.name
+            user2Label.text = peerID.displayName
+        case .notConnected:
+            navItem.title = "Disconnected"
+            
+        //MARK: Add alert notifying user of disconnection.
+        case .connecting:
+            navItem.title = "Connecting..."
+        }
+        
+        
+        
         
     }
     
@@ -135,14 +151,33 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             label.text = ""
         }
         
-        navItem.title = "Not Connected"
-        
         topView.backgroundColor = UIColor.white
         playButton.setTitle("", for: .normal)
     }
     
    @objc func rpsTapped(sender: UITapGestureRecognizer){
         print("tapped")
+   guard let selectedView = sender.view as? UIImageView else {return}
+    
+    switch selectedView.tag {
+    case 0:
+        userChoiceImages[0].image = #imageLiteral(resourceName: "rock")
+        selectedImage = #imageLiteral(resourceName: "rock")
+    case 1:
+        userChoiceImages[0].image = #imageLiteral(resourceName: "paper")
+        selectedImage = #imageLiteral(resourceName: "paper")
+    case 2:
+        userChoiceImages[0].image = #imageLiteral(resourceName: "scissors")
+        selectedImage = #imageLiteral(resourceName: "scissors")
+    default:
+        print("Incorrect image tag")
     }
+    
+    
+    
+    }
+    @IBAction func playTapped(_ sender: UIButton) {
+    }
+    
 }
 
