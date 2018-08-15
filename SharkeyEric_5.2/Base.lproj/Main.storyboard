@@ -169,6 +169,18 @@
                             <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="I4K-ag-iv0" userLabel="scissorsImageView">
                                 <rect key="frame" x="252" y="557" width="112.5" height="100"/>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B3S-N8-ZwE">
+                                <rect key="frame" x="175" y="341.5" width="25" height="48"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UR4-iM-nxi">
+                                <rect key="frame" x="167" y="507" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -185,6 +197,7 @@
                             <constraint firstItem="gyO-UH-kUi" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Kem-F4-GGt"/>
                             <constraint firstItem="fqP-3F-95E" firstAttribute="width" secondItem="CIC-8W-zJX" secondAttribute="width" id="LFA-h7-7zJ"/>
                             <constraint firstItem="vZu-m2-EAg" firstAttribute="centerY" secondItem="HxN-9q-saq" secondAttribute="centerY" id="Lgd-HR-nf6"/>
+                            <constraint firstItem="B3S-N8-ZwE" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="NMG-EO-ep5"/>
                             <constraint firstItem="CIC-8W-zJX" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.15" id="Qnb-eh-iHo"/>
                             <constraint firstItem="7Ae-CF-5Ns" firstAttribute="centerY" secondItem="CIC-8W-zJX" secondAttribute="centerY" id="Zfs-MG-vGP"/>
                             <constraint firstItem="CIC-8W-zJX" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.3" id="an9-Lb-sG2"/>
@@ -195,6 +208,9 @@
                             <constraint firstItem="fqP-3F-95E" firstAttribute="height" secondItem="CIC-8W-zJX" secondAttribute="height" id="ch0-wR-zmE"/>
                             <constraint firstItem="HxN-9q-saq" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.3" id="djJ-fA-w8G"/>
                             <constraint firstItem="CIC-8W-zJX" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="f7w-eQ-gZB"/>
+                            <constraint firstItem="UR4-iM-nxi" firstAttribute="top" secondItem="ZTX-he-KYY" secondAttribute="bottom" constant="8" id="foI-Xl-5SK"/>
+                            <constraint firstItem="UR4-iM-nxi" firstAttribute="centerX" secondItem="ZTX-he-KYY" secondAttribute="centerX" id="ge2-nz-lOO"/>
+                            <constraint firstItem="B3S-N8-ZwE" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="gww-bN-ppW"/>
                             <constraint firstItem="7Ae-CF-5Ns" firstAttribute="centerX" secondItem="CIC-8W-zJX" secondAttribute="centerX" id="hJA-1U-ibp"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="gyO-UH-kUi" secondAttribute="trailing" id="no5-hP-5TS"/>
                             <constraint firstItem="gyO-UH-kUi" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.18" id="oFh-Su-mBz"/>
@@ -216,8 +232,10 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="counterLabel" destination="B3S-N8-ZwE" id="xce-v8-d1n"/>
                         <outlet property="navItem" destination="N4N-rN-R7n" id="0bW-fy-yYL"/>
                         <outlet property="playButton" destination="7Ae-CF-5Ns" id="ZBG-y8-i7R"/>
+                        <outlet property="playSelectedLabel" destination="UR4-iM-nxi" id="EVf-nq-8au"/>
                         <outlet property="resultLabel" destination="ZTX-he-KYY" id="8cu-X5-h3G"/>
                         <outlet property="roShamBoLabel" destination="7U0-ep-FpJ" id="XGY-gp-Aj8"/>
                         <outlet property="topView" destination="gyO-UH-kUi" id="Aho-2z-sub"/>
