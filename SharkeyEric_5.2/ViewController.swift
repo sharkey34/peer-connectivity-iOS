@@ -39,7 +39,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var win = 0
     var draw = 0
     var loss = 0
-    var selectedImage: String!
+    var user1selectedImage: String!
+    var user2selectedImage: String!
     var timer = Timer()
     var timerCounter = 3
     var playCounter = 0
@@ -118,8 +119,17 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                     self.playSelectedLabel.text = "\(peerID.displayName) is ready..."
                     self.playersReady()
                 } else{
-                    print(data)
-                    self.userChoiceImages[1].image = self.rpsImageViews[Int(data)!].image
+                    switch data{
+                    case "r":
+                        self.user2selectedImage = "r"
+                    case "p":
+                        self.user2selectedImage = "p"
+                    case "s":
+                        self.user2selectedImage = "s"
+                    default:
+                        print("Image failed.")
+                        
+                    }
                 }
             }
         }
@@ -184,20 +194,19 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     switch selectedView.tag {
     case 0:
         userChoiceImages[0].image = #imageLiteral(resourceName: "rock")
-        selectedImage = "r"
+        user1selectedImage = "r"
     case 1:
         userChoiceImages[0].image = #imageLiteral(resourceName: "paper")
-        selectedImage = "p"
+        user1selectedImage = "p"
     case 2:
         userChoiceImages[0].image = #imageLiteral(resourceName: "scissors")
-        selectedImage = "s"
+        user1selectedImage = "s"
     default:
         print("Incorrect image tag")
     }
     
-    guard let index = selectedImage else {return}
 
-    if let text =  index.data(using: String.Encoding.utf8){
+    if let text =  user1selectedImage.data(using: String.Encoding.utf8){
         
         do{
             try session.send(text, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
@@ -208,6 +217,10 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     }
     @IBAction func playTapped(_ sender: UIButton) {
+        
+        for imageView in userChoiceImages{
+            imageView.image = nil
+        }
         playCounter += 1
         
         playButton.isHidden = true
@@ -230,16 +243,104 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     @objc func checkImage (){
       
         if timerCounter > 0 {
-            timerCounter -= 1
             counterLabel.text = "\(timerCounter)"
+            timerCounter -= 1
         } else {
             // MARK: When Timer hits 0 check the images and display.
+            switch user1selectedImage{
+            case nil:
+                if user2selectedImage == nil{
+                    resultLabel.text = "Time has run out! it's a Draw!"
+                    draw += 1
+                }  else if user2selectedImage == "r"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
+                    resultLabel.text = "You ran out of time! You Lose!"
+                    loss += 1
+                } else if user2selectedImage == "p"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
+                    resultLabel.text = "You ran out of time! You Lose!"
+                    loss += 1
+                } else if user2selectedImage == "s"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
+                    resultLabel.text = "You ran out of time! You Lose!"
+                    loss += 1
+                } else {
+                    print("whoa")
+                }
+            case "r":
+                if user2selectedImage == nil{
+                    resultLabel.text = "Time has run out! it's a Draw!"
+                    draw += 1
+                } else if user2selectedImage == "r"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
+                    resultLabel.text = "Draw!"
+                    draw += 1
+                } else if user2selectedImage == "p"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
+                    resultLabel.text = "You Lose!"
+                    loss += 1
+                } else if user2selectedImage == "s"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
+                    resultLabel.text = "You Win!"
+                    win += 1
+                } else {
+                    print("whoa")
+                }
+            case "p":
+                if user2selectedImage == nil{
+                    resultLabel.text = "Time has run out! it's a Draw!"
+                    draw += 1
+                } else if user2selectedImage == "r"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
+                    resultLabel.text = "You Win!"
+                    win += 1
+                } else if user2selectedImage == "p"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
+                    resultLabel.text = "Draw!"
+                    draw += 1
+                } else if user2selectedImage == "s"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
+                    resultLabel.text = "You Lose!"
+                    loss += 1
+                } else {
+                    print("whoa")
+                }
+            case "s":
+                if user2selectedImage == nil{
+                    resultLabel.text = "Time has run out! it's a Draw!"
+                    draw += 1
+                } else if user2selectedImage == "r"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
+                    resultLabel.text = "You Lose!"
+                    loss += 1
+                } else if user2selectedImage == "p"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
+                    resultLabel.text = "You Win!"
+                    win += 1
+                } else if user2selectedImage == "s"{
+                    userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
+                    resultLabel.text = "Draw!"
+                    draw += 1
+                } else {
+                    print("whoa")
+                }
+            default:
+                print("Image comparison")
+            }
+
             
-            
+            tallyCollection[0].text = "\(win)"
+            tallyCollection[1].text = "\(draw)"
+            tallyCollection[2].text = "\(loss)"
             
             timerCounter = 3
             timer.invalidate()
             counterLabel.text = nil
+            
+            for imageview in rpsImageViews{
+                imageview.isHidden = true
+            }
+            playButton.isHidden = false
         }
     }
     
