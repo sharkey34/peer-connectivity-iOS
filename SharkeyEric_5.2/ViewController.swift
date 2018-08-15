@@ -86,6 +86,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             navItem.title = "Connected"
             user1Label.text = UIDevice.current.name
             user2Label.text = peerID.displayName
+            playButton.setTitle("Play", for: .normal)
+            roShamBoLabel.text = nil
         case .notConnected:
             navItem.title = "Disconnected"
             
@@ -102,13 +104,14 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     // Received data from remote peer.
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        
+
+        //MARK: Start 3 second timer with selector function.
     }
     
     
     // Received a byte stream from remote peer.
     public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
-        
+        print("ImageRecieved")
     }
     
     
@@ -177,6 +180,32 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     }
     @IBAction func playTapped(_ sender: UIButton) {
+        
+        guard let buttonText = playButton.titleLabel?.text else {return}
+//     let test = Data.init(base64Encoded: buttonText)
+//        buttonText.data(using: String.Encoding.utf8)
+//
+//        if let path = Bundle.main.path(forResource: "rock", ofType: "png"){
+//            let url = URL(fileURLWithPath: path)
+//
+//                session.sendResource(at: url, withName: "rock.png", toPeer: peerId, withCompletionHandler: nil)
+//        }
+        
+     
+        
+        if let text = Data.init(base64Encoded: buttonText) {
+            
+            do{
+                try session.send(text, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+            } catch{
+                print(error.localizedDescription)
+            }
+        }
+        
+    }
+    
+    @objc func checkImage (){
+    
     }
     
 }
