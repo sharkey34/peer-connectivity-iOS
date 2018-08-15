@@ -39,7 +39,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var win = 0
     var draw = 0
     var loss = 0
-    var selectedImage: Int!
+    var selectedImage: String!
     var timer = Timer()
     var timerCounter = 3
     var playCounter = 0
@@ -116,12 +116,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 if data == "Play"{
                     self.playCounter += 1
                     self.playSelectedLabel.text = "\(peerID.displayName) is ready..."
-                    if self.playCounter == 2 {
-                        
-                        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.checkImage), userInfo: nil, repeats: true)
-                        
-                        self.playCounter = 0
-                    }
+                    self.playersReady()
                 } else{
                     print(data)
                     self.userChoiceImages[1].image = self.rpsImageViews[Int(data)!].image
@@ -189,38 +184,37 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     switch selectedView.tag {
     case 0:
         userChoiceImages[0].image = #imageLiteral(resourceName: "rock")
-        selectedImage = 0
+        selectedImage = "r"
     case 1:
         userChoiceImages[0].image = #imageLiteral(resourceName: "paper")
-        selectedImage = 1
+        selectedImage = "p"
     case 2:
         userChoiceImages[0].image = #imageLiteral(resourceName: "scissors")
-        selectedImage = 2
+        selectedImage = "s"
     default:
         print("Incorrect image tag")
     }
     
-//    guard let index = selectedImage else {return}
-//
-//    if let text = Data.init(base64Encoded: String(index)) {
-//
-//        do{
-//            try session.send(text, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
-//        } catch{
-//            print(error.localizedDescription)
-//        }
-//    }
+    guard let index = selectedImage else {return}
+
+    if let text =  index.data(using: String.Encoding.utf8){
+        
+        do{
+            try session.send(text, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        } catch{
+            print(error.localizedDescription)
+        }
+    }
     
     }
     @IBAction func playTapped(_ sender: UIButton) {
         playCounter += 1
         
-        if playCounter == 2 {
-            
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.checkImage), userInfo: nil, repeats: true)
-            
-            playCounter = 0
-        }
+        playButton.isHidden = true
+        
+        playersReady()
+        
+        
             guard let buttonText = playButton.titleLabel?.text else {return}
         
             if let text = buttonText.data(using: String.Encoding.utf8) {
@@ -246,6 +240,18 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             timerCounter = 3
             timer.invalidate()
             counterLabel.text = nil
+        }
+    }
+    
+    func playersReady(){
+        if playCounter == 2 {
+            
+            for imageView in rpsImageViews{
+                imageView.isHidden = false
+            }
+            
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.checkImage), userInfo: nil, repeats: true)
+            playCounter = 0
         }
     }
 }
