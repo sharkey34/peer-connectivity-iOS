@@ -251,75 +251,107 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             case nil:
                 if user2selectedImage == nil{
                     resultLabel.text = "Time has run out! it's a Draw!"
+                    profileImages[0].image = #imageLiteral(resourceName: "draw")
+                    profileImages[1].image = #imageLiteral(resourceName: "draw")
                     draw += 1
                 }  else if user2selectedImage == "r"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
                     resultLabel.text = "You ran out of time! You Lose!"
+                    profileImages[0].image = #imageLiteral(resourceName: "loss")
+                    profileImages[1].image = #imageLiteral(resourceName: "win")
                     loss += 1
                 } else if user2selectedImage == "p"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
                     resultLabel.text = "You ran out of time! You Lose!"
+                    profileImages[0].image = #imageLiteral(resourceName: "loss")
+                    profileImages[1].image = #imageLiteral(resourceName: "win")
                     loss += 1
                 } else if user2selectedImage == "s"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
                     resultLabel.text = "You ran out of time! You Lose!"
+                    profileImages[0].image = #imageLiteral(resourceName: "loss")
+                    profileImages[1].image = #imageLiteral(resourceName: "win")
                     loss += 1
                 } else {
                     print("whoa")
                 }
             case "r":
                 if user2selectedImage == nil{
-                    resultLabel.text = "Time has run out! it's a Draw!"
-                    draw += 1
+                    resultLabel.text = "User2 Failed to select an image! You Win!"
+                    profileImages[0].image = #imageLiteral(resourceName: "win")
+                    profileImages[1].image = #imageLiteral(resourceName: "loss")
+                    win += 1
                 } else if user2selectedImage == "r"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
                     resultLabel.text = "Draw!"
+                    profileImages[0].image = #imageLiteral(resourceName: "draw")
+                    profileImages[1].image = #imageLiteral(resourceName: "draw")
                     draw += 1
                 } else if user2selectedImage == "p"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
                     resultLabel.text = "You Lose!"
+                    profileImages[0].image = #imageLiteral(resourceName: "loss")
+                    profileImages[1].image = #imageLiteral(resourceName: "win")
                     loss += 1
                 } else if user2selectedImage == "s"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
                     resultLabel.text = "You Win!"
+                    profileImages[0].image = #imageLiteral(resourceName: "win")
+                    profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
                 } else {
                     print("whoa")
                 }
             case "p":
                 if user2selectedImage == nil{
-                    resultLabel.text = "Time has run out! it's a Draw!"
-                    draw += 1
+                    resultLabel.text = "User2 Failed to select an image! You Win!"
+                    profileImages[0].image = #imageLiteral(resourceName: "win")
+                    profileImages[1].image = #imageLiteral(resourceName: "loss")
+                    win += 1
                 } else if user2selectedImage == "r"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
                     resultLabel.text = "You Win!"
+                    profileImages[0].image = #imageLiteral(resourceName: "win")
+                    profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
                 } else if user2selectedImage == "p"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
                     resultLabel.text = "Draw!"
+                    profileImages[0].image = #imageLiteral(resourceName: "draw")
+                    profileImages[1].image = #imageLiteral(resourceName: "draw")
                     draw += 1
                 } else if user2selectedImage == "s"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
                     resultLabel.text = "You Lose!"
+                    profileImages[0].image = #imageLiteral(resourceName: "loss")
+                    profileImages[1].image = #imageLiteral(resourceName: "win")
                     loss += 1
                 } else {
                     print("whoa")
                 }
             case "s":
                 if user2selectedImage == nil{
-                    resultLabel.text = "Time has run out! it's a Draw!"
-                    draw += 1
+                    resultLabel.text = "User2 Failed to select an image! You Win!"
+                    profileImages[0].image = #imageLiteral(resourceName: "win")
+                    profileImages[1].image = #imageLiteral(resourceName: "loss")
+                    win += 1
                 } else if user2selectedImage == "r"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "rock")
                     resultLabel.text = "You Lose!"
+                    profileImages[0].image = #imageLiteral(resourceName: "loss")
+                    profileImages[1].image = #imageLiteral(resourceName: "win")
                     loss += 1
                 } else if user2selectedImage == "p"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "paper")
                     resultLabel.text = "You Win!"
+                    profileImages[0].image = #imageLiteral(resourceName: "win")
+                    profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
                 } else if user2selectedImage == "s"{
                     userChoiceImages[1].image = #imageLiteral(resourceName: "scissors")
                     resultLabel.text = "Draw!"
+                    profileImages[0].image = #imageLiteral(resourceName: "draw")
+                    profileImages[1].image = #imageLiteral(resourceName: "draw")
                     draw += 1
                 } else {
                     print("whoa")
@@ -328,7 +360,6 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 print("Image comparison")
             }
 
-            
             tallyCollection[0].text = "\(win)"
             tallyCollection[1].text = "\(draw)"
             tallyCollection[2].text = "\(loss)"
@@ -346,6 +377,14 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     func playersReady(){
         if playCounter == 2 {
+            playSelectedLabel.text = nil
+            topView.backgroundColor = UIColor.cyan
+            for imageView in profileImages{
+                imageView.image = #imageLiteral(resourceName: "win")
+            }
+            wdlLables[0].text = "Win"
+            wdlLables[1].text = "Draw"
+            wdlLables[2].text = "Loss"
             
             for imageView in rpsImageViews{
                 imageView.isHidden = false
