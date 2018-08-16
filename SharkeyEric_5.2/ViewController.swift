@@ -44,6 +44,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var timer = Timer()
     var timerCounter = 3
     var playCounter = 0
+    var connectedPeer = ""
     
     let serviceId = "sharkeyEric-52"
 
@@ -96,6 +97,18 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 self.user2Label.text = peerID.displayName
                 self.playButton.setTitle("Play", for: .normal)
                 self.roShamBoLabel.text = nil
+                self.connectedPeer = peerID.displayName
+                 self.topView.backgroundColor = UIColor.cyan
+                for imageView in  self.profileImages{
+                    imageView.image = #imageLiteral(resourceName: "win")
+                }
+                 self.wdlLables[0].text = "Win"
+                 self.wdlLables[1].text = "Draw"
+                 self.wdlLables[2].text = "Loss"
+                
+                for label in  self.tallyCollection{
+                    label.text = "0"
+                }
             case .notConnected:
                 self.navItem.title = "Disconnected"
                 
@@ -218,6 +231,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     }
     @IBAction func playTapped(_ sender: UIButton) {
         
+        resultLabel.text = nil
         for imageView in userChoiceImages{
             imageView.image = nil
         }
@@ -277,7 +291,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
             case "r":
                 if user2selectedImage == nil{
-                    resultLabel.text = "User2 Failed to select an image! You Win!"
+                    resultLabel.text = "\(connectedPeer) Failed to select an image! You Win!"
                     profileImages[0].image = #imageLiteral(resourceName: "win")
                     profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
@@ -304,7 +318,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
             case "p":
                 if user2selectedImage == nil{
-                    resultLabel.text = "User2 Failed to select an image! You Win!"
+                    resultLabel.text = "\(connectedPeer) Failed to select an image! You Win!"
                     profileImages[0].image = #imageLiteral(resourceName: "win")
                     profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
@@ -331,7 +345,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
             case "s":
                 if user2selectedImage == nil{
-                    resultLabel.text = "User2 Failed to select an image! You Win!"
+                    resultLabel.text = "\(connectedPeer) Failed to select an image! You Win!"
                     profileImages[0].image = #imageLiteral(resourceName: "win")
                     profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
@@ -372,19 +386,16 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 imageview.isHidden = true
             }
             playButton.isHidden = false
+            user1selectedImage = nil
+            user2selectedImage = nil
         }
+       
+        
     }
     
     func playersReady(){
         if playCounter == 2 {
             playSelectedLabel.text = nil
-            topView.backgroundColor = UIColor.cyan
-            for imageView in profileImages{
-                imageView.image = #imageLiteral(resourceName: "win")
-            }
-            wdlLables[0].text = "Win"
-            wdlLables[1].text = "Draw"
-            wdlLables[2].text = "Loss"
             
             for imageView in rpsImageViews{
                 imageView.isHidden = false
