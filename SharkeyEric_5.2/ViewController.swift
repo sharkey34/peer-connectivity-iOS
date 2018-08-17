@@ -29,6 +29,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     @IBOutlet weak var navItem: UINavigationItem!
     @IBOutlet weak var counterLabel: UILabel!
     @IBOutlet weak var playSelectedLabel: UILabel!
+    @IBOutlet weak var welcomeLabel: UILabel!
     
     // Creating variables.
     var session: MCSession!
@@ -98,10 +99,12 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 self.playButton.setTitle("Play", for: .normal)
                 self.roShamBoLabel.text = nil
                 self.connectedPeer = peerID.displayName
-                 self.topView.backgroundColor = UIColor.cyan
+                self.topView.backgroundColor = UIColor.cyan
+                self.welcomeLabel.text = nil
                 for imageView in  self.profileImages{
                     imageView.image = #imageLiteral(resourceName: "win")
                 }
+            
                  self.wdlLables[0].text = "Win"
                  self.wdlLables[1].text = "Draw"
                  self.wdlLables[2].text = "Loss"
@@ -109,9 +112,36 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 for label in  self.tallyCollection{
                     label.text = "0"
                 }
+                
+                self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Disconnect", style: .plain  , target: self, action: #selector(self.disconnectTapped))
             case .notConnected:
                 self.navItem.title = "Disconnected"
                 
+                self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Connect", style: .plain, target: self, action: #selector(self.connectTap(_:)))
+                
+                for label in self.wdlLables{
+                    label.text = nil
+                }
+                
+                self.resultLabel.text = nil
+                self.user1Label.text = nil
+                self.user2Label.text = nil
+                self.vsLabel.text = nil
+                self.counterLabel.text = nil
+                self.playSelectedLabel.text = nil
+                
+                for image in self.userChoiceImages{
+                    image.image = nil
+                }
+                
+                for image in self.profileImages{
+                    image.image = nil
+                }
+                
+                for label in self.tallyCollection{
+                    label.text = nil
+                }
+                self.playButton.setTitle(nil, for: .normal)
             //MARK: Add alert notifying user of disconnection.
             case .connecting:
                 self.navItem.title = "Connecting..."
@@ -122,8 +152,6 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     // Received data from remote peer.
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        
-        //MARK: Start 3 second timer with selector function.
         
         if let data: String = String(data: data, encoding: String.Encoding.utf8){
             DispatchQueue.main.async {
@@ -170,6 +198,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     func setup(){
         
+        welcomeLabel.text = "Welcome!\n Click connect to choose your oponent\n and start the game!"
         rpsImageViews[0].image = #imageLiteral(resourceName: "rock")
         rpsImageViews[1].image = #imageLiteral(resourceName: "paper")
         rpsImageViews[2].image = #imageLiteral(resourceName: "scissors")
@@ -196,12 +225,11 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             label.text = nil
         }
         
-        topView.backgroundColor = UIColor.white
-        playButton.setTitle("", for: .normal)
+        topView.backgroundColor = UIColor.cyan
+        playButton.setTitle(nil, for: .normal)
     }
     
    @objc func rpsTapped(sender: UITapGestureRecognizer){
-        print("tapped")
    guard let selectedView = sender.view as? UIImageView else {return}
     
     switch selectedView.tag {
@@ -404,6 +432,10 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.checkImage), userInfo: nil, repeats: true)
             playCounter = 0
         }
+    }
+    
+    @objc func disconnectTapped(){
+        session.disconnect()
     }
 }
 
