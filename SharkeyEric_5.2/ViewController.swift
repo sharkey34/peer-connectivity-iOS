@@ -62,6 +62,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         
         setup()
         
+//        navigationController?.navigationBar.barTintColor = UIColor.red
+        
     }
     
     
@@ -99,7 +101,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 self.playButton.setTitle("Play", for: .normal)
                 self.roShamBoLabel.text = nil
                 self.connectedPeer = peerID.displayName
-                self.topView.backgroundColor = UIColor.cyan
+                self.topView.backgroundColor = UIColor.init(red:0.12, green:0.70, blue:0.57, alpha:1.0)
                 self.welcomeLabel.text = nil
                 for imageView in  self.profileImages{
                     imageView.image = #imageLiteral(resourceName: "win")
@@ -114,9 +116,17 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
                 
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Disconnect", style: .plain  , target: self, action: #selector(self.disconnectTapped))
-            case .notConnected:
-                self.navItem.title = "Disconnected"
                 
+            case .notConnected:
+                
+                let alert = UIAlertController(title: "Disconnected", message: "You have been disconnected from \(self.connectedPeer)", preferredStyle: .alert)
+                
+                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+                
+                self.navItem.title = "Disconnected"
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Connect", style: .plain, target: self, action: #selector(self.connectTap(_:)))
                 
                 for label in self.wdlLables{
@@ -158,6 +168,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 if data == "Play"{
                     self.playCounter += 1
                     self.playSelectedLabel.text = "\(peerID.displayName) is ready..."
+                    self.resultLabel.text = nil
                     self.playersReady()
                 } else{
                     switch data{
