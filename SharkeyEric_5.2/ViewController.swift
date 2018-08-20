@@ -30,6 +30,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     @IBOutlet weak var counterLabel: UILabel!
     @IBOutlet weak var playSelectedLabel: UILabel!
     @IBOutlet weak var welcomeLabel: UILabel!
+    @IBOutlet weak var activity: UIActivityIndicatorView!
     
     // Creating variables.
     var session: MCSession!
@@ -46,27 +47,22 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var timerCounter = 3
     var playCounter = 0
     var connectedPeer = ""
-    
     let serviceId = "sharkeyEric-52"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Setting up the peerID, session, advertiser, and calling the setup funcion.
         peerId = MCPeerID(displayName: UIDevice.current.name)
-        
         session = MCSession(peer: peerId)
         session.delegate = self
-        
         advertisor = MCAdvertiserAssistant(serviceType: serviceId, discoveryInfo: nil, session: session)
         advertisor.start()
         
         setup()
-        
-//        navigationController?.navigationBar.barTintColor = UIColor.red
-        
     }
     
-    
+    // Function to display the browser view controller when the connect button has been tapped.
     @IBAction func connectTap(_ sender: UIBarButtonItem) {
         browser = MCBrowserViewController(serviceType: serviceId, session: session)
         browser.delegate = self
@@ -77,6 +73,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     
     //MARK - MCBrowserViewControllerDelegate
+    
+    // Functions to dismiss the browser.
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
         browserViewController.dismiss(animated: true, completion: nil)
     }
@@ -91,22 +89,26 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     // Remote peer changed state.
     public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
         
+        // Switching on the status of the state.
         DispatchQueue.main.async {
             switch state {
-            // Maybe add activity indicator.
+                
+                // If the state is connected then setting the nave title to display connected and setting the user labels to that of the two connected players.
+                // Setting the welcome labels to nil and changing the top views color and assigning the two emoji images.
             case .connected:
                 self.navItem.title = "Connected"
+                self.activity.stopAnimating()
+                self.activity.isHidden = true
                 self.user1Label.text = UIDevice.current.name
                 self.user2Label.text = peerID.displayName
                 self.playButton.setTitle("Play", for: .normal)
-                self.roShamBoLabel.text = nil
                 self.connectedPeer = peerID.displayName
-                self.topView.backgroundColor = UIColor.init(red:0.12, green:0.70, blue:0.57, alpha:1.0)
-                self.welcomeLabel.text = nil
+                self.topView.backgroundColor = UIColor.init(red:0.38, green:0.69, blue:0.80, alpha:1.0)
                 for imageView in  self.profileImages{
                     imageView.image = #imageLiteral(resourceName: "win")
                 }
             
+                // Setting up the win draw loss labels.
                  self.wdlLables[0].text = "Win"
                  self.wdlLables[1].text = "Draw"
                  self.wdlLables[2].text = "Loss"
@@ -115,16 +117,17 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                     label.text = "0"
                 }
                 
+                // Changing the button to say disconnect.
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Disconnect", style: .plain  , target: self, action: #selector(self.disconnectTapped))
+                
                 
             case .notConnected:
                 
-                let alert = UIAlertController(title: "Disconnected", message: "You have been disconnected from \(self.connectedPeer)", preferredStyle: .alert)
+                // If the state changes to disconnected then resetting the labels and topviews colors back to what they were at the beginning.
+                self.welcomeLabel.text = "Welcome!\n Click connect to choose your oponent\n and start the game!"
+                self.roShamBoLabel.text = "RoShamBo!!"
                 
-                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-                
-                alert.addAction(action)
-                self.present(alert, animated: true, completion: nil)
+                self.topView.backgroundColor = UIColor.init(red:0.59, green:0.67, blue:0.70, alpha:1.0)
                 
                 self.navItem.title = "Disconnected"
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Connect", style: .plain, target: self, action: #selector(self.connectTap(_:)))
@@ -139,6 +142,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 self.vsLabel.text = nil
                 self.counterLabel.text = nil
                 self.playSelectedLabel.text = nil
+                self.activity.stopAnimating()
+                self.activity.isHidden = true
                 
                 for image in self.userChoiceImages{
                     image.image = nil
@@ -151,10 +156,28 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 for label in self.tallyCollection{
                     label.text = nil
                 }
+                
+                self.draw = 0
+                self.win = 0
+                self.loss = 0
+                
                 self.playButton.setTitle(nil, for: .normal)
-            //MARK: Add alert notifying user of disconnection.
+                
+                // Displaying an alert when the user is disconnected.
+                    let alert = UIAlertController(title: "Disconnected", message: "You have been disconnected from \(self.connectedPeer)", preferredStyle: .alert)
+                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+                
+                // If the state is connecting changing the nav title to connecting..
+                // Starting the activity indicator and setting the welcome label and roshambo label to nil
             case .connecting:
                 self.navItem.title = "Connecting..."
+                self.activity.isHidden = false
+                self.activity.startAnimating()
+                self.welcomeLabel.text = nil
+                self.roShamBoLabel.text = nil
             }
         }
     }
@@ -163,13 +186,18 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     // Received data from remote peer.
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         
+        // Decoding the sent data.
         if let data: String = String(data: data, encoding: String.Encoding.utf8){
             DispatchQueue.main.async {
+                
+                // If the data sent was play then increasing the play counter, alerting the user that the other player is ready and calling the players Ready function.
                 if data == "Play"{
                     self.playCounter += 1
                     self.playSelectedLabel.text = "\(peerID.displayName) is ready..."
                     self.resultLabel.text = nil
                     self.playersReady()
+                
+                    // Otherwise using a switch and setting the selected image.
                 } else{
                     switch data{
                     case "r":
@@ -201,19 +229,23 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     
     // Finished receiving a resource from remote peer and saved the content
-    // in a temporary location - the app is responsible for moving the file
-    // to a permanent location within its sandbox.
     public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?){
         
     }
     
+    // Setup function setting all the variables and colors to their needed values and calling in the ViewDidLoad.
     func setup(){
         
-        welcomeLabel.text = "Welcome!\n Click connect to choose your oponent\n and start the game!"
+        // Setting colors.
+        topView.backgroundColor = UIColor.init(red:0.59, green:0.67, blue:0.70, alpha:1.0)
+        view.backgroundColor = UIColor.init(red:0.59, green:0.67, blue:0.70, alpha:1.0)
+        
+        // Setting images.
         rpsImageViews[0].image = #imageLiteral(resourceName: "rock")
         rpsImageViews[1].image = #imageLiteral(resourceName: "paper")
         rpsImageViews[2].image = #imageLiteral(resourceName: "scissors")
         
+        // Assigning tap gestures to the imageViews, enabling user interaction and hiding the image Views.
         for imageView in rpsImageViews{
             let tap = UITapGestureRecognizer(target: self, action: #selector(ViewController.rpsTapped(sender:)))
             imageView.addGestureRecognizer(tap)
@@ -221,28 +253,30 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             imageView.isHidden = true
         }
         
+        // Setting the labels, and play button to nil.
         for label in wdlLables{
             label.text = nil
         }
-        
+        welcomeLabel.text = "Welcome!\n Click connect to choose your oponent\n and start the game!"
         resultLabel.text = nil
         user1Label.text = nil
         user2Label.text = nil
         vsLabel.text = nil
         counterLabel.text = nil
         playSelectedLabel.text = nil
-        
         for label in tallyCollection{
             label.text = nil
         }
         
-        topView.backgroundColor = UIColor.cyan
         playButton.setTitle(nil, for: .normal)
+        activity.isHidden = true
     }
     
    @objc func rpsTapped(sender: UITapGestureRecognizer){
+    
    guard let selectedView = sender.view as? UIImageView else {return}
     
+    // switching on the selected views tag and setting the image and user1SelectedImage value.
     switch selectedView.tag {
     case 0:
         userChoiceImages[0].image = #imageLiteral(resourceName: "rock")
@@ -258,8 +292,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     }
     
 
+    // Deciding string and sending to the connected peers.
     if let text =  user1selectedImage.data(using: String.Encoding.utf8){
-        
         do{
             try session.send(text, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
         } catch{
@@ -268,6 +302,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     }
     
     }
+    
+    // When play is tapped setting the userChoiceImages to nil, increasing the counter, hiding the playbutton, and sending the sending Play to the connected peers then calling the playerReady function.
     @IBAction func playTapped(_ sender: UIButton) {
         
         resultLabel.text = nil
@@ -278,28 +314,31 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         
         playButton.isHidden = true
         
-        playersReady()
-        
-        
             guard let buttonText = playButton.titleLabel?.text else {return}
         
             if let text = buttonText.data(using: String.Encoding.utf8) {
         
                 do{
                     try session.send(text, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                    playSelectedLabel.text = "Waiting for \(connectedPeer)...."
                 } catch{
                     print(error.localizedDescription)
                 }
             }
+        
+        playersReady()
     }
     
+    // Checking the timercounter and updating the counterLabel.
     @objc func checkImage (){
       
         if timerCounter > 0 {
             counterLabel.text = "\(timerCounter)"
             timerCounter -= 1
         } else {
-            // MARK: When Timer hits 0 check the images and display.
+            
+            // When the timerCounter equals 0 then switching on the first users selected image.
+            // Checking to see who won and setting the resultLabel, profileImage, and win draw loss values accordingly.
             switch user1selectedImage{
             case nil:
                 if user2selectedImage == nil{
@@ -330,7 +369,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
             case "r":
                 if user2selectedImage == nil{
-                    resultLabel.text = "\(connectedPeer) Failed to select an image! You Win!"
+                    resultLabel.text = "\(connectedPeer) Ran out of time! You Win!"
                     profileImages[0].image = #imageLiteral(resourceName: "win")
                     profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
@@ -357,7 +396,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
             case "p":
                 if user2selectedImage == nil{
-                    resultLabel.text = "\(connectedPeer) Failed to select an image! You Win!"
+                    resultLabel.text = "\(connectedPeer) Ran out of time! You Win!"
                     profileImages[0].image = #imageLiteral(resourceName: "win")
                     profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
@@ -384,7 +423,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 }
             case "s":
                 if user2selectedImage == nil{
-                    resultLabel.text = "\(connectedPeer) Failed to select an image! You Win!"
+                    resultLabel.text = "\(connectedPeer) Ran out of time! You Win!"
                     profileImages[0].image = #imageLiteral(resourceName: "win")
                     profileImages[1].image = #imageLiteral(resourceName: "loss")
                     win += 1
@@ -413,14 +452,17 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 print("Image comparison")
             }
 
+            // Updating the tally
             tallyCollection[0].text = "\(win)"
             tallyCollection[1].text = "\(draw)"
             tallyCollection[2].text = "\(loss)"
             
+            // Resetting the timer counter, invalidating the timer and setting the counter label to nil.
             timerCounter = 3
             timer.invalidate()
             counterLabel.text = nil
             
+            // Hiding the rpsImageVIews, playbuttin and setting selected images to nil.
             for imageview in rpsImageViews{
                 imageview.isHidden = true
             }
@@ -432,6 +474,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         
     }
     
+    // Checking to see if both players are ready, if they are then showing the rpsImageViews and starting the timer.
     func playersReady(){
         if playCounter == 2 {
             playSelectedLabel.text = nil
@@ -445,6 +488,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         }
     }
     
+    // Disonnecting when the Disconnect button is tapped.
     @objc func disconnectTapped(){
         session.disconnect()
     }
