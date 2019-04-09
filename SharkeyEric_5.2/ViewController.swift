@@ -178,6 +178,8 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
                 self.activity.startAnimating()
                 self.welcomeLabel.text = nil
                 self.roShamBoLabel.text = nil
+            @unknown default:
+                fatalError()
             }
         }
     }
