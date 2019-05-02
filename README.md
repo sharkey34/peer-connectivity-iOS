@@ -2,6 +2,9 @@
 
 RoShamBo is a rock paper scissors game using MultipeerConnectivity. Connect with another device and play them in a game of rock paper scissors.
 
+## Demo ##
+![](Gifs/GamePlay.gif)
+
 ## Getting Started
 
 1. Download the project 
